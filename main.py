@@ -1,6 +1,6 @@
 import keras
 from keras import layers
-from keras import ops
+#from keras import ops
 
 import os
 import numpy as np
@@ -77,7 +77,8 @@ def convolution_block(
         kernel_initializer=keras.initializers.HeNormal(),
     )(block_input)
     x = layers.BatchNormalization()(x)
-    return ops.nn.relu(x)
+    x = layers.ReLU()(x)
+    return x
 
 def DilatedSpatialPyramidPooling(dspp_input):
     dims = dspp_input.shape
