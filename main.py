@@ -26,10 +26,14 @@ VAL_DIR = os.path.join(DATA_DIR, 'Validation')
 NUM_TRAIN_IMAGES = 1000
 NUM_VAL_IMAGES = 50
 
-train_images = sorted(glob(os.path.join(DATA_DIR, "Images/*")))
-train_masks = sorted(glob(os.path.join(DATA_DIR, "Category_ids/*")))
-val_images = sorted(glob(os.path.join(DATA_DIR, "Images/*")))
-val_masks = sorted(glob(os.path.join(DATA_DIR, "Category_ids/*")))
+train_images = sorted(glob(os.path.join(TRAIN_DIR, "Images/*")))[:NUM_TRAIN_IMAGES]
+train_masks = sorted(glob(os.path.join(TRAIN_DIR, "Category_ids/*")))[:NUM_TRAIN_IMAGES]
+val_images = sorted(glob(os.path.join(VAL_DIR, "Images/*")))[
+    NUM_TRAIN_IMAGES : NUM_VAL_IMAGES + NUM_TRAIN_IMAGES
+]
+val_masks = sorted(glob(os.path.join(VAL_DIR, "Category_ids/*")))[
+    NUM_TRAIN_IMAGES : NUM_VAL_IMAGES + NUM_TRAIN_IMAGES
+]
 
 def read_image(image_path, mask=False):
     image = tf_io.read_file(image_path)
