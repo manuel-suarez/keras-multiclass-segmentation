@@ -1,6 +1,6 @@
-import keras
-import keras.applications
-from keras import layers
+#import keras
+#import keras.applications
+#from keras import layers
 #from keras import ops
 
 import os
@@ -8,6 +8,7 @@ import numpy as np
 from glob import glob
 import cv2
 from scipy.io import loadmat
+import tensorflow as tf
 import matplotlib.pyplot as plt
 
 # For data preprocessing
@@ -75,7 +76,7 @@ def convolution_block(
         dilation_rate=dilation_rate,
         padding="same",
         use_bias=use_bias,
-        kernel_initializer=keras.initializers.HeNormal(),
+        kernel_initializer=tf.keras.initializers.HeNormal(),
     )(block_input)
     x = layers.BatchNormalization()(x)
     x = layers.ReLU()(x)
@@ -100,9 +101,9 @@ def DilatedSpatialPyramidPooling(dspp_input):
     return output
 
 def DeeplabV3Plus(image_size, num_classes):
-    model_input = keras.Input(shape=(image_size, image_size, 3))
-    preprocessed = keras.applications.resnet50.preprocess_input(model_input)
-    resnet50 = keras.applications.ResNet50(
+    model_input = tf.keras.Input(shape=(image_size, image_size, 3))
+    preprocessed = tf.keras.applications.resnet50.preprocess_input(model_input)
+    resnet50 = tf.keras.applications.ResNet50(
         weights="imagenet", include_top=False, input_tensor=preprocessed
     )
     x = resnet50.get_layer("conv4_block6_2_relu").output
@@ -123,14 +124,14 @@ def DeeplabV3Plus(image_size, num_classes):
         interpolation="bilinear",
     )(x)
     model_output = layers.Conv2D(num_classes, kernel_size=(1, 1), padding="same")(x)
-    return keras.Model(inputs=model_input, outputs=model_output)
+    return tf.keras.Model(inputs=model_input, outputs=model_output)
 
 model = DeeplabV3Plus(image_size=IMAGE_SIZE, num_classes=NUM_CLASSES)
 model.summary()
 
-loss = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+loss = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
 model.compile(
-    optimizer=keras.optimizers.Adam(learning_rate=0.001),
+    optimizer=tf.keras.optimizers.Adam(learning_rate=0.001),
     loss=loss,
     metrics=["accuracy"]
 )
